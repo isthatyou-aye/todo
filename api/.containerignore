@@ -1,0 +1,32 @@
+# =============================================================
+# .containerignore - service api
+# File/folder di sini TIDAK dikirim ke proses build, sehingga
+# tidak mungkin ikut masuk ke image.
+# =============================================================
+
+# Dependency lokal: di-install ulang di dalam image oleh `npm ci`
+node_modules
+
+# Data stateful lokal: data hidup di volume, bukan di image
+data
+
+# Skrip mode development (npm run dev), tidak dipakai di container
+dev.js
+
+# Secret & konfigurasi lokal: JANGAN PERNAH masuk image
+.env
+.env.*
+*.pem
+*.key
+
+# Log dan file sementara
+npm-debug.log*
+*.log
+*.tmp
+
+# Git, editor, dan dokumentasi (tidak dibutuhkan saat runtime)
+.git
+.gitignore
+.vscode
+.idea
+*.md

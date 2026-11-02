@@ -1,0 +1,17 @@
+# Dependency
+node_modules/
+
+# Data lokal (stateful) - tidak ikut di repo
+data/
+
+# Secret & konfigurasi lokal
+.env
+.env.*
+!.env.example
+
+# Log & sistem
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

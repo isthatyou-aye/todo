@@ -1,0 +1,22 @@
+# =============================================================
+# Containerfile.naive - CONTOH YANG TIDAK DISARANKAN
+# Hanya untuk PERBANDINGAN ukuran & keamanan di laporan/video.
+# Jangan di-push ke registry.
+#
+#   podman build -f ./api/Containerfile.naive -t todo-api:naive ./api
+#   podman images todo-api
+#
+# Masalah versi ini:
+#   - base image "node:24" (Debian lengkap, ~1 GB) bukan Alpine
+#   - single-stage: cache npm & file build ikut masuk image
+#   - COPY . . sebelum npm install: cache layer rusak setiap kode berubah
+#   - berjalan sebagai ROOT
+#   - memakai "npm start" sehingga SIGTERM tidak langsung sampai ke aplikasi
+#   - tidak ada HEALTHCHECK dan label
+# =============================================================
+FROM docker.io/library/node:24
+WORKDIR /app
+COPY . .
+RUN npm install
+EXPOSE 3000
+CMD ["npm", "start"]

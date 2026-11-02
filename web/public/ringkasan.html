@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Progres tugasmu: berapa yang sudah selesai, tenggat terdekat, dan aktivitas 7 hari terakhir.">
+  <meta name="theme-color" content="#eef1f6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0c1120" media="(prefers-color-scheme: dark)">
+  <title>Ringkasan | Todo App</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/theme-init.js"></script>
+</head>
+<body data-page-title="Ringkasan">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark"><i data-icon="logo"></i></span>
+        <span class="brand-name" data-app-name>Todo App</span>
+      </a>
+      <nav class="nav" aria-label="Halaman">
+        <a href="/">Tugas</a>
+        <a href="/ringkasan" aria-current="page">Ringkasan</a>
+      </nav>
+      <button id="theme-toggle" class="icon-btn" type="button"></button>
+    </div>
+  </header>
+
+  <main class="summary">
+    <div class="banner" id="banner" role="alert" hidden>
+      <span id="banner-text"></span>
+      <button class="btn btn-small btn-quiet" id="banner-retry" type="button">Coba lagi</button>
+    </div>
+
+    <section class="summary-hero" aria-labelledby="hero-title">
+      <div>
+        <p class="summary-kicker" id="today-label">&nbsp;</p>
+        <h1 class="sr-only" id="hero-title">Ringkasan progres</h1>
+        <p class="big-number" aria-live="polite"><span id="rate">0</span><small>%</small></p>
+        <p class="big-caption" id="rate-caption">Memuat progres...</p>
+        <div class="marker-track" role="progressbar" aria-label="Persentase tugas selesai" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="rate-bar">
+          <div class="marker-fill" id="rate-fill"></div>
+        </div>
+      </div>
+      <div class="hero-side">
+        <div class="streak"><strong id="streak">0</strong><span>hari beruntun</span></div>
+        <p id="streak-caption">&nbsp;</p>
+        <a class="btn btn-quiet" href="/">Buka daftar tugas</a>
+      </div>
+    </section>
+
+    <section class="figures" aria-label="Angka utama">
+      <div class="figure"><span class="figure-value" id="f-active">0</span><span class="figure-label">belum selesai</span></div>
+      <div class="figure" id="f-overdue-box"><span class="figure-value" id="f-overdue">0</span><span class="figure-label">terlambat</span></div>
+      <div class="figure"><span class="figure-value" id="f-week">0</span><span class="figure-label">tenggat 7 hari ke depan</span></div>
+      <div class="figure"><span class="figure-value" id="f-today">0</span><span class="figure-label">selesai hari ini</span></div>
+      <div class="figure"><span class="figure-value" id="f-sub">0</span><span class="figure-label">subtugas selesai</span></div>
+    </section>
+
+    <div class="panels">
+      <section class="panel panel-wide" aria-labelledby="chart-title">
+        <h2 id="chart-title">Aktivitas 7 hari terakhir</h2>
+        <p class="panel-sub" id="chart-sub">Tugas yang diselesaikan dan ditambahkan setiap hari.</p>
+        <div class="chart" id="chart" role="list"></div>
+        <div class="chart-labels" id="chart-labels" aria-hidden="true"></div>
+        <div class="legend">
+          <span><i class="swatch swatch-done"></i>Diselesaikan</span>
+          <span><i class="swatch swatch-created"></i>Ditambahkan</span>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="upcoming-title">
+        <h2 id="upcoming-title">Tenggat terdekat</h2>
+        <p class="panel-sub">Tugas belum selesai, diurutkan dari tenggat paling dekat.</p>
+        <ul class="mini-list" id="upcoming"></ul>
+      </section>
+
+      <section class="panel" aria-labelledby="recent-title">
+        <h2 id="recent-title">Baru selesai</h2>
+        <p class="panel-sub">Tugas yang terakhir kamu selesaikan.</p>
+        <ul class="mini-list" id="recent"></ul>
+      </section>
+
+      <section class="panel" aria-labelledby="priority-title">
+        <h2 id="priority-title">Per prioritas</h2>
+        <p class="panel-sub">Jumlah selesai dibanding total di setiap prioritas.</p>
+        <div class="breakdown" id="by-priority"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="tag-title">
+        <h2 id="tag-title">Per tag</h2>
+        <p class="panel-sub">Klik tag untuk membuka tugasnya.</p>
+        <div class="breakdown" id="by-tag"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer" data-app-footer>&nbsp;</footer>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/summary.js"></script>
+</body>
+</html>

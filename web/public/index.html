@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Catat tugas, beri tenggat dan prioritas, lalu centang yang sudah selesai.">
+  <meta name="theme-color" content="#eef1f6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0c1120" media="(prefers-color-scheme: dark)">
+  <title>Tugas | Todo App</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/theme-init.js"></script>
+</head>
+<body data-page-title="Tugas">
+  <a class="sr-only" href="#task-list">Langsung ke daftar tugas</a>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark"><i data-icon="logo"></i></span>
+        <span class="brand-name" data-app-name>Todo App</span>
+      </a>
+      <nav class="nav" aria-label="Halaman">
+        <a href="/" aria-current="page">Tugas</a>
+        <a href="/ringkasan">Ringkasan</a>
+      </nav>
+      <button id="shortcut-btn" class="icon-btn" type="button" aria-label="Pintasan keyboard" title="Pintasan keyboard (?)"><i data-icon="keyboard"></i></button>
+      <button id="theme-toggle" class="icon-btn" type="button"></button>
+    </div>
+  </header>
+
+  <div class="app">
+    <!-- Sidebar: daftar pintar + tag -->
+    <aside class="sidebar" aria-label="Daftar">
+      <div class="side-group">
+        <h2 class="side-title">Daftar</h2>
+        <div class="side-nav">
+          <div class="side-indicator" id="view-indicator" aria-hidden="true"></div>
+          <ul class="side-list" id="view-list"></ul>
+        </div>
+      </div>
+      <div class="side-group">
+        <h2 class="side-title">Tag</h2>
+        <ul class="side-list" id="tag-list"></ul>
+        <p class="side-empty" id="tag-empty">Tambahkan tag dengan menulis <strong>#nama</strong> di judul tugas.</p>
+      </div>
+    </aside>
+
+    <main id="main">
+      <div class="banner" id="banner" role="alert" hidden>
+        <span id="banner-text"></span>
+        <button class="btn btn-small btn-quiet" id="banner-retry" type="button">Coba lagi</button>
+      </div>
+
+      <div class="list-head" id="list-head">
+        <h1 class="list-title" id="list-title">Semua tugas</h1>
+        <p class="list-sub" id="list-sub">&nbsp;</p>
+      </div>
+
+      <!-- Tambah tugas cepat -->
+      <form class="composer" id="composer" autocomplete="off">
+        <i data-icon="plus" class="composer-plus"></i>
+        <label class="sr-only" for="composer-input">Tugas baru</label>
+        <input id="composer-input" type="text" maxlength="400"
+               placeholder="Tambah tugas baru">
+        <button class="btn" type="submit" id="composer-submit">Tambah</button>
+      </form>
+      <div class="composer-help" id="composer-help">
+        <span class="preview-chips" id="composer-preview"></span>
+        <span id="composer-hint">
+          <code>#tag</code> untuk tag, <code>!tinggi</code> untuk prioritas, <code>@besok</code> untuk tenggat.
+          <span class="hint-desktop">Tekan <kbd>N</kbd> dari mana saja untuk menulis tugas.</span>
+        </span>
+      </div>
+
+      <!-- Pencarian, urutan, filter, menu aksi -->
+      <div class="toolbar">
+        <label class="search">
+          <i data-icon="search"></i>
+          <span class="sr-only">Cari tugas</span>
+          <input id="search" type="search" placeholder="Cari judul, catatan, tag">
+          <kbd>/</kbd>
+        </label>
+        <label class="sr-only" for="priority-filter">Filter prioritas</label>
+        <select class="select" id="priority-filter">
+          <option value="any">Semua prioritas</option>
+          <option value="high">Prioritas tinggi</option>
+          <option value="medium">Prioritas sedang</option>
+          <option value="low">Prioritas rendah</option>
+          <option value="none">Tanpa prioritas</option>
+        </select>
+        <label class="sr-only" for="sort">Urutkan</label>
+        <select class="select" id="sort">
+          <option value="manual">Urutan saya</option>
+          <option value="due">Tenggat terdekat</option>
+          <option value="priority">Prioritas tertinggi</option>
+          <option value="created">Terbaru dibuat</option>
+          <option value="alpha">Judul A sampai Z</option>
+        </select>
+        <div class="menu-wrap">
+          <button class="icon-btn" id="menu-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="action-menu" aria-label="Aksi lainnya" title="Aksi lainnya"><i data-icon="more"></i></button>
+          <div class="menu" id="action-menu" role="menu" hidden>
+            <button type="button" role="menuitem" data-action="complete-visible"><i data-icon="checkAll"></i>Tandai semua di daftar ini selesai</button>
+            <button type="button" role="menuitem" data-action="clear-done" class="is-danger"><i data-icon="trash"></i>Hapus semua tugas yang selesai</button>
+            <hr>
+            <button type="button" role="menuitem" data-action="export"><i data-icon="download"></i>Unduh cadangan (JSON)</button>
+            <button type="button" role="menuitem" data-action="import"><i data-icon="upload"></i>Pulihkan dari cadangan</button>
+          </div>
+        </div>
+        <input type="file" id="import-file" accept="application/json,.json" hidden>
+      </div>
+
+      <section class="sheet" id="main-sheet" aria-labelledby="list-title">
+        <ul class="task-list" id="task-list" aria-label="Tugas belum selesai"></ul>
+        <div id="list-empty" hidden></div>
+      </section>
+
+      <section class="done-group" id="done-group" hidden>
+        <button class="done-toggle" id="done-toggle" type="button" aria-expanded="true" aria-controls="done-sheet">
+          <i data-icon="chevron"></i><span id="done-label">Selesai</span>
+        </button>
+        <div class="sheet" id="done-sheet">
+          <ul class="task-list" id="done-list" aria-label="Tugas selesai"></ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="site-footer" data-app-footer>&nbsp;</footer>
+
+  <!-- Panel detail tugas -->
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" tabindex="-1">
+    <div class="drawer-head">
+      <span class="save-state" id="save-state" aria-live="polite"></span>
+      <button class="icon-btn" type="button" id="drawer-close" aria-label="Tutup panel" title="Tutup (Esc)"><i data-icon="x"></i></button>
+    </div>
+    <div class="drawer-body">
+      <div class="drawer-title-row">
+        <input type="checkbox" class="check" id="drawer-done" aria-label="Tandai selesai">
+        <textarea class="drawer-title" id="drawer-title" rows="1" maxlength="200" aria-label="Judul tugas"></textarea>
+      </div>
+
+      <div class="field">
+        <span class="field-label" id="priority-label">Prioritas</span>
+        <div class="segmented" id="drawer-priority" role="group" aria-labelledby="priority-label">
+          <button type="button" data-value="none" aria-pressed="false"><span class="dot"></span>Tidak ada</button>
+          <button type="button" data-value="low" aria-pressed="false"><span class="dot dot-low"></span>Rendah</button>
+          <button type="button" data-value="medium" aria-pressed="false"><span class="dot dot-medium"></span>Sedang</button>
+          <button type="button" data-value="high" aria-pressed="false"><span class="dot dot-high"></span>Tinggi</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="drawer-due">Tenggat</label>
+        <div class="date-row">
+          <input class="input" type="date" id="drawer-due">
+          <button class="chip-btn" type="button" data-due="0">Hari ini</button>
+          <button class="chip-btn" type="button" data-due="1">Besok</button>
+          <button class="chip-btn" type="button" data-due="7">Minggu depan</button>
+          <button class="chip-btn" type="button" data-due="clear">Hapus</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="drawer-tag-input">Tag</label>
+        <div class="tag-editor" id="drawer-tags">
+          <input id="drawer-tag-input" type="text" list="tag-suggestions" placeholder="Ketik tag lalu Enter" maxlength="25">
+        </div>
+        <datalist id="tag-suggestions"></datalist>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="drawer-subtask-input" id="subtask-label">Subtugas</label>
+        <div class="subtask-progress" id="subtask-progress" hidden><span></span></div>
+        <ul class="subtasks" id="drawer-subtasks" aria-labelledby="subtask-label"></ul>
+        <form class="subtask-add" id="subtask-form" autocomplete="off">
+          <input class="input" id="drawer-subtask-input" type="text" maxlength="200" placeholder="Tambah langkah kecil">
+          <button class="btn btn-quiet btn-small" type="submit">Tambah</button>
+        </form>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="drawer-notes">Catatan</label>
+        <textarea class="notes" id="drawer-notes" maxlength="2000" placeholder="Tulis detail, link, atau hal yang perlu diingat"></textarea>
+        <div class="char-count" id="notes-count">0 / 2000</div>
+      </div>
+
+      <dl class="meta-list" id="drawer-meta"></dl>
+    </div>
+    <div class="drawer-foot">
+      <button class="btn btn-danger btn-small" type="button" id="drawer-delete"><i data-icon="trash"></i>Hapus tugas</button>
+      <button class="btn btn-quiet btn-small" type="button" id="drawer-done-btn">Selesai</button>
+    </div>
+  </aside>
+
+  <!-- Bantuan pintasan keyboard -->
+  <dialog id="shortcut-dialog" aria-labelledby="shortcut-title">
+    <div class="dialog-head">
+      <h2 id="shortcut-title">Pintasan keyboard</h2>
+      <button class="icon-btn" type="button" data-close aria-label="Tutup"><i data-icon="x"></i></button>
+    </div>
+    <div class="dialog-body">
+      <dl class="shortcut-list">
+        <dt><kbd>N</kbd></dt><dd>Tulis tugas baru</dd>
+        <dt><kbd>/</kbd></dt><dd>Cari tugas</dd>
+        <dt><kbd>↑</kbd><kbd>↓</kbd></dt><dd>Pindah antar tugas</dd>
+        <dt><kbd>Spasi</kbd></dt><dd>Tandai selesai atau belum</dd>
+        <dt><kbd>Enter</kbd></dt><dd>Buka detail tugas</dd>
+        <dt><kbd>E</kbd></dt><dd>Ubah judul langsung di daftar</dd>
+        <dt><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>0</kbd></dt><dd>Prioritas tinggi, sedang, rendah, tanpa</dd>
+        <dt><kbd>Alt</kbd><kbd>↑</kbd><kbd>↓</kbd></dt><dd>Geser tugas ke atas atau bawah</dd>
+        <dt><kbd>Del</kbd></dt><dd>Hapus tugas (bisa dibatalkan)</dd>
+        <dt><kbd>Esc</kbd></dt><dd>Tutup panel atau kosongkan pencarian</dd>
+      </dl>
+      <div class="syntax-list">
+        <p><code>#kuliah</code> menambahkan tag kuliah.</p>
+        <p><code>!tinggi</code>, <code>!sedang</code>, <code>!rendah</code> mengatur prioritas.</p>
+        <p><code>@hariini</code>, <code>@besok</code>, <code>@lusa</code>, <code>@jumat</code>, <code>@25/11</code> mengatur tenggat.</p>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/tasks.js"></script>
+</body>
+</html>

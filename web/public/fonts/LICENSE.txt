@@ -1,0 +1,5 @@
+Font yang disertakan di folder ini dilisensikan di bawah SIL Open Font License 1.1 (OFL-1.1):
+- Bricolage Grotesque (c) The Bricolage Grotesque Project Authors
+- Atkinson Hyperlegible Next (c) Braille Institute of America
+Sumber: paket npm @fontsource-variable/bricolage-grotesque dan @fontsource/atkinson-hyperlegible-next
+Teks lisensi: https://openfontlicense.org

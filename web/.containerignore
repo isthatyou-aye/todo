@@ -1,0 +1,21 @@
+# =============================================================
+# .containerignore - service web
+# File/folder di sini TIDAK dikirim ke proses build.
+# =============================================================
+
+# Secret & konfigurasi lokal: JANGAN PERNAH masuk image
+.env
+.env.*
+*.pem
+*.key
+
+# Log dan file sementara
+*.log
+*.tmp
+
+# Git, editor, dan dokumentasi
+.git
+.gitignore
+.vscode
+.idea
+*.md

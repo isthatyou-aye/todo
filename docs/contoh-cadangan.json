@@ -1,0 +1,153 @@
+[
+  {
+    "title": "Kerjakan laporan UTS Pengembangan dan Operasi",
+    "tags": [
+      "uts",
+      "kuliah"
+    ],
+    "priority": "high",
+    "dueDate": "2026-11-04",
+    "notes": "Format PDF. Masukkan link video (public) dan bukti image di GHCR.",
+    "subtasks": [
+      {
+        "title": "Diagram arsitektur",
+        "done": true
+      },
+      {
+        "title": "Screenshot build dan run",
+        "done": true
+      },
+      {
+        "title": "Bab kendala dan solusi",
+        "done": false
+      },
+      {
+        "title": "Export ke PDF",
+        "done": false
+      }
+    ],
+    "createdAt": "2026-10-28T03:15:00Z"
+  },
+  {
+    "title": "Rekam video demo 8 sampai 12 menit",
+    "tags": [
+      "uts"
+    ],
+    "priority": "high",
+    "dueDate": "2026-11-07",
+    "subtasks": [
+      {
+        "title": "Naskah per anggota"
+      },
+      {
+        "title": "Rekam terminal"
+      },
+      {
+        "title": "Edit dan upload"
+      }
+    ],
+    "createdAt": "2026-10-29T03:15:00Z"
+  },
+  {
+    "title": "Push image ke GHCR lalu ubah jadi public",
+    "tags": [
+      "uts"
+    ],
+    "priority": "medium",
+    "dueDate": "2026-11-02",
+    "createdAt": "2026-10-31T03:15:00Z"
+  },
+  {
+    "title": "Balas chat grup soal pembagian tugas",
+    "tags": [
+      "kelompok"
+    ],
+    "priority": "medium",
+    "dueDate": "2026-11-01",
+    "createdAt": "2026-10-30T03:15:00Z"
+  },
+  {
+    "title": "Revisi logbook Flutter",
+    "tags": [
+      "flutter",
+      "kuliah"
+    ],
+    "priority": "medium",
+    "dueDate": "2026-11-03",
+    "createdAt": "2026-11-01T03:15:00Z"
+  },
+  {
+    "title": "Baca materi container image layering",
+    "tags": [
+      "kuliah"
+    ],
+    "priority": "low",
+    "dueDate": "2026-11-11",
+    "createdAt": "2026-11-01T03:15:00Z"
+  },
+  {
+    "title": "Beli kertas HVS untuk print laporan",
+    "priority": "low",
+    "createdAt": "2026-11-02T01:15:00Z"
+  },
+  {
+    "title": "Cuci motor",
+    "createdAt": "2026-11-02T02:15:00Z"
+  },
+  {
+    "title": "Tulis Containerfile web",
+    "tags": [
+      "uts"
+    ],
+    "priority": "high",
+    "done": true,
+    "completedAt": "2026-11-02T02:15:00Z",
+    "createdAt": "2026-10-30T03:15:00Z"
+  },
+  {
+    "title": "Tulis Containerfile api",
+    "tags": [
+      "uts"
+    ],
+    "priority": "high",
+    "done": true,
+    "completedAt": "2026-11-01T13:15:00Z",
+    "createdAt": "2026-10-30T03:15:00Z"
+  },
+  {
+    "title": "Buat token GHCR",
+    "tags": [
+      "uts"
+    ],
+    "priority": "medium",
+    "done": true,
+    "completedAt": "2026-10-31T10:15:00Z",
+    "createdAt": "2026-10-29T03:15:00Z"
+  },
+  {
+    "title": "Install Podman Desktop",
+    "tags": [
+      "uts"
+    ],
+    "done": true,
+    "completedAt": "2026-10-30T09:15:00Z",
+    "createdAt": "2026-10-28T03:15:00Z"
+  },
+  {
+    "title": "Aktifkan WSL2",
+    "done": true,
+    "completedAt": "2026-10-30T08:15:00Z",
+    "createdAt": "2026-10-27T03:15:00Z"
+  },
+  {
+    "title": "Kumpulkan tugas Basis Data",
+    "tags": [
+      "kuliah"
+    ],
+    "priority": "medium",
+    "dueDate": "2026-10-27",
+    "done": true,
+    "completedAt": "2026-10-27T15:15:00Z",
+    "createdAt": "2026-10-25T03:15:00Z"
+  }
+]

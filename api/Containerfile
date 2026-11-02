@@ -1,0 +1,83 @@
+# =============================================================
+# Containerfile - service "api" (Node.js + Express)
+# Teknik small footprint: MULTI-STAGE BUILD + base image Alpine.
+#
+# Build (dari folder root proyek):
+#   podman build --format docker -t ghcr.io/isthatyou-aye/todo-api:1.0.0 ./api
+# (--format docker diperlukan supaya instruksi HEALTHCHECK ikut tersimpan)
+# =============================================================
+
+# Versi Node.js dikunci ke LTS 24 (tidak memakai tag "latest"),
+# supaya hasil build selalu konsisten.
+ARG NODE_VERSION=24
+
+# -------------------------------------------------------------
+# Stage 1: "deps" - memasang dependency produksi saja
+# -------------------------------------------------------------
+FROM docker.io/library/node:${NODE_VERSION}-alpine AS deps
+WORKDIR /app
+
+# Salin package.json dan package-lock.json DULU (tanpa kode).
+# Layer npm ci hanya dibangun ulang kalau dependency berubah,
+# bukan setiap kali kode berubah (memanfaatkan layer cache).
+COPY package.json package-lock.json ./
+
+# npm ci       : install persis sesuai package-lock.json
+# --omit=dev   : tanpa devDependencies
+# cache clean  : buang cache npm supaya layer tidak membengkak
+RUN npm ci --omit=dev --no-audit --no-fund && npm cache clean --force
+
+# -------------------------------------------------------------
+# Stage 2: "runtime" - image akhir yang dijalankan & di-push
+# Hanya berisi Node.js, node_modules hasil stage 1, dan kode.
+# -------------------------------------------------------------
+FROM docker.io/library/node:${NODE_VERSION}-alpine AS runtime
+
+ARG APP_VERSION=1.0.0
+
+# Metadata standar OCI (terlihat di `podman inspect` dan di GHCR)
+LABEL org.opencontainers.image.title="todo-api" \
+      org.opencontainers.image.description="REST API aplikasi To-Do List (UTS Container)" \
+      org.opencontainers.image.version="${APP_VERSION}" \
+      org.opencontainers.image.authors="Kelvin, Anggara, Devin" \
+      org.opencontainers.image.source="https://github.com/isthatyou-aye/todo" \
+      org.opencontainers.image.licenses="MIT"
+
+# Nilai DEFAULT environment variable. Semuanya boleh ditimpa saat
+# `podman run -e ...`. Secret (ADMIN_TOKEN) sengaja TIDAK ditulis
+# di sini, karena apa pun yang ditulis di Containerfile ikut
+# tersimpan permanen di image.
+ENV NODE_ENV=production \
+    PORT=3000 \
+    DATA_DIR=/data \
+    APP_NAME="Todo App" \
+    APP_ENV=production \
+    APP_VERSION=${APP_VERSION} \
+    LOG_FORMAT=text
+
+WORKDIR /app
+
+# Folder data (STATEFUL) dibuat dan diberikan ke user "node".
+# Saat run, folder ini ditimpa oleh volume: -v todo-data:/data
+RUN mkdir -p /data && chown node:node /data
+
+# Salin hasil stage 1 dan kode aplikasi. File-file ini tetap milik
+# root, jadi user "node" hanya bisa MEMBACA kode, tidak bisa mengubahnya.
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json ./
+COPY src ./src
+
+# Jalankan sebagai user NON-ROOT "node" (uid 1000) bawaan image Node
+USER node
+
+# Dokumentasi port yang didengarkan aplikasi di dalam container
+EXPOSE 3000
+
+# Podman mengecek kesehatan aplikasi tiap 30 detik lewat /api/health.
+# Memakai Node bawaan (tanpa memasang curl) supaya image tetap kecil.
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD ["node", "-e", "fetch('http://127.0.0.1:'+(process.env.PORT||3000)+'/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+
+# Jalankan `node` langsung (bukan `npm start`) supaya sinyal dari
+# `podman stop` (SIGTERM) diterima langsung oleh aplikasi.
+CMD ["node", "src/server.js"]

@@ -1,0 +1,54 @@
+# =============================================================
+# compose.yaml - menjalankan SELURUH aplikasi dengan satu perintah
+#
+#   podman compose up -d --build    # build image lalu jalankan
+#   podman compose ps               # lihat status
+#   podman compose logs -f          # lihat log kedua container
+#   podman compose down             # hentikan & hapus container (volume tetap ada)
+#
+# Isinya sama persis dengan perintah manual di README bagian 6.
+# Secret ADMIN_TOKEN dibaca dari file .env (salin dari .env.example),
+# yang tidak ikut ke Git maupun ke image.
+# =============================================================
+name: todo
+
+services:
+  api:
+    build:
+      context: ./api
+    image: ghcr.io/isthatyou-aye/todo-api:1.0.0
+    container_name: todo-api
+    environment:
+      APP_NAME: ${APP_NAME:-Todo Kelompok}
+      APP_ENV: ${APP_ENV:-production}
+      LOG_FORMAT: ${LOG_FORMAT:-text}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+    volumes:
+      - todo-data:/data        # data STATEFUL tetap aman walau container dihapus
+    networks:
+      - todo-net
+    restart: unless-stopped
+    # Tidak ada "ports": api tidak dibuka ke host, hanya bisa diakses lewat web
+
+  web:
+    build:
+      context: ./web
+    image: ghcr.io/isthatyou-aye/todo-web:1.0.0
+    container_name: todo-web
+    environment:
+      API_URL: http://todo-api:3000
+    ports:
+      - "8080:8080"            # host:container
+    networks:
+      - todo-net
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  todo-data:
+    name: todo-data
+
+networks:
+  todo-net:
+    name: todo-net
