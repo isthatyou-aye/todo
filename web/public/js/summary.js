@@ -161,7 +161,7 @@
     }
   }
 
-  $('banner-retry').addEventListener('click', load);
+  $('banner-retry').addEventListener('click', () => { load(); window.App.loadAppInfo(); });
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') load();
   });

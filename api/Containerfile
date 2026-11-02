@@ -3,7 +3,7 @@
 # Teknik small footprint: MULTI-STAGE BUILD + base image Alpine.
 #
 # Build (dari folder root proyek):
-#   podman build --format docker -t ghcr.io/isthatyou-aye/todo-api:1.0.0 ./api
+#   podman build --format docker -t ghcr.io/isthatyou-aye/todo-api:1.0.1 ./api
 # (--format docker diperlukan supaya instruksi HEALTHCHECK ikut tersimpan)
 # =============================================================
 
@@ -33,7 +33,7 @@ RUN npm ci --omit=dev --no-audit --no-fund && npm cache clean --force
 # -------------------------------------------------------------
 FROM docker.io/library/node:${NODE_VERSION}-alpine AS runtime
 
-ARG APP_VERSION=1.0.0
+ARG APP_VERSION=1.0.1
 
 # Metadata standar OCI (terlihat di `podman inspect` dan di GHCR)
 LABEL org.opencontainers.image.title="todo-api" \

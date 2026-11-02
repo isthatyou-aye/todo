@@ -1,6 +1,6 @@
 {
   "name": "todo-api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Service backend (REST API) aplikasi To-Do List untuk UTS container",
   "private": true,
   "main": "src/server.js",

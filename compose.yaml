@@ -16,7 +16,7 @@ services:
   api:
     build:
       context: ./api
-    image: ghcr.io/isthatyou-aye/todo-api:1.0.0
+    image: ghcr.io/isthatyou-aye/todo-api:1.0.1
     container_name: todo-api
     environment:
       APP_NAME: ${APP_NAME:-Todo Kelompok}
@@ -33,7 +33,7 @@ services:
   web:
     build:
       context: ./web
-    image: ghcr.io/isthatyou-aye/todo-web:1.0.0
+    image: ghcr.io/isthatyou-aye/todo-web:1.0.1
     container_name: todo-web
     environment:
       API_URL: http://todo-api:3000

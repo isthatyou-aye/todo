@@ -275,6 +275,7 @@
   loadAppInfo();
 
   window.App = {
+    loadAppInfo,
     icon,
     hydrateIcons,
     el,

@@ -5,7 +5,7 @@ Proyek UTS mata kuliah Pengembangan dan Operasi. Aplikasi web To-Do List yang di
 | | |
 |---|---|
 | **Kelompok** | Kelvin, Anggara, Devin |
-| **Image** | `ghcr.io/isthatyou-aye/todo-web:1.0.0` dan `ghcr.io/isthatyou-aye/todo-api:1.0.0` |
+| **Image** | `ghcr.io/isthatyou-aye/todo-web:1.0.1` dan `ghcr.io/isthatyou-aye/todo-api:1.0.1` |
 | **Teknologi** | Node.js 24 + Express 5 (api), Nginx 1.30 unprivileged (web), HTML/CSS/JavaScript tanpa framework (frontend), Podman |
 
 ---
@@ -79,8 +79,8 @@ Semua input divalidasi di server (panjang judul, format tanggal, format tag, jum
 
 | Komponen | Image | Port | Sifat | Keterangan |
 |---|---|---|---|---|
-| `todo-web` | `todo-web:1.0.0` | 8080 (dipublikasikan ke host) | Stateless | Menyajikan HTML/CSS/JS/font, meneruskan `/api/*` ke `todo-api` |
-| `todo-api` | `todo-api:1.0.0` | 3000 (hanya di network internal) | Stateless | Logika aplikasi, validasi, statistik, log setiap request |
+| `todo-web` | `todo-web:1.0.1` | 8080 (dipublikasikan ke host) | Stateless | Menyajikan HTML/CSS/JS/font, meneruskan `/api/*` ke `todo-api` |
+| `todo-api` | `todo-api:1.0.1` | 3000 (hanya di network internal) | Stateless | Logika aplikasi, validasi, statistik, log setiap request |
 | `todo-data` | volume Podman | – | **Stateful** | File `tasks.json`, tetap ada walaupun container dihapus |
 | `todo-admin-token` | secret Podman | – | – | Token admin, disuntikkan saat runtime, **tidak** ada di image |
 
@@ -154,8 +154,8 @@ Pada mode ini Express ikut menyajikan frontend (tanpa Nginx), data disimpan di `
 ## 6. Build image
 
 ```powershell
-podman build --format docker -t ghcr.io/isthatyou-aye/todo-api:1.0.0 ./api
-podman build --format docker -t ghcr.io/isthatyou-aye/todo-web:1.0.0 ./web
+podman build --format docker -t ghcr.io/isthatyou-aye/todo-api:1.0.1 ./api
+podman build --format docker -t ghcr.io/isthatyou-aye/todo-web:1.0.1 ./web
 ```
 
 `--format docker` dipakai supaya instruksi `HEALTHCHECK` ikut tersimpan. Format default Podman (OCI) mengabaikannya.
@@ -164,7 +164,7 @@ Melihat hasil build:
 
 ```powershell
 podman images --filter reference=ghcr.io/isthatyou-aye/*
-podman history ghcr.io/isthatyou-aye/todo-api:1.0.0     # daftar layer
+podman history ghcr.io/isthatyou-aye/todo-api:1.0.1     # daftar layer
 ```
 
 ---
@@ -199,12 +199,12 @@ podman run -d --name todo-api --network todo-net `
   -v todo-data:/data `
   --secret todo-admin-token,type=env,target=ADMIN_TOKEN `
   -e APP_NAME="Todo Kelompok" `
-  ghcr.io/isthatyou-aye/todo-api:1.0.0
+  ghcr.io/isthatyou-aye/todo-api:1.0.1
 
 # 5) Jalankan web dengan port mapping host 8080 -> container 8080
 podman run -d --name todo-web --network todo-net `
   -p 8080:8080 `
-  ghcr.io/isthatyou-aye/todo-web:1.0.0
+  ghcr.io/isthatyou-aye/todo-web:1.0.1
 
 # 6) Cek status (kolom STATUS akan menampilkan "healthy")
 podman ps
@@ -221,7 +221,7 @@ Buka **http://localhost:8080**. Untuk mengisi contoh data: menu titik tiga → *
 | `PORT` | api | `3000` | Port API di dalam container |
 | `APP_NAME` | api | `Todo App` | Nama aplikasi (tampil di header, judul tab, dan log) |
 | `APP_ENV` | api | `production` | Nama environment (tampil di footer) |
-| `APP_VERSION` | api | `1.0.0` | Versi, diisi saat build |
+| `APP_VERSION` | api | `1.0.1` | Versi, diisi saat build |
 | `DATA_DIR` | api | `/data` | Lokasi data stateful |
 | `LOG_FORMAT` | api | `text` | `text` (mudah dibaca) atau `json` (terstruktur) |
 | `ADMIN_TOKEN` | api | *(kosong)* | **Secret**, hanya lewat `--secret` atau `.env` saat run |
@@ -237,7 +237,7 @@ Buka **http://localhost:8080**. Untuk mengisi contoh data: menu titik tiga → *
 ```powershell
 podman port todo-web                 # 8080/tcp -> 0.0.0.0:8080
 # Contoh port host lain: jalankan web kedua di port 9090
-podman run -d --name todo-web-2 --network todo-net -p 9090:8080 ghcr.io/isthatyou-aye/todo-web:1.0.0
+podman run -d --name todo-web-2 --network todo-net -p 9090:8080 ghcr.io/isthatyou-aye/todo-web:1.0.1
 # buka http://localhost:9090 (datanya sama, karena memakai api yang sama), lalu hapus lagi:
 podman rm -f todo-web-2
 ```
@@ -249,7 +249,7 @@ podman rm -f todo-api
 podman run -d --name todo-api --network todo-net -v todo-data:/data `
   --secret todo-admin-token,type=env,target=ADMIN_TOKEN `
   -e APP_NAME="Catatan Kelompok 3" -e APP_ENV=staging -e LOG_FORMAT=json `
-  ghcr.io/isthatyou-aye/todo-api:1.0.0
+  ghcr.io/isthatyou-aye/todo-api:1.0.1
 ```
 
 Muat ulang browser: **nama di header berubah** menjadi "Catatan Kelompok 3", footer menampilkan `staging`, dan `podman logs todo-api` kini berformat JSON. Tugas yang sudah ada tetap muncul karena tersimpan di volume.
@@ -271,8 +271,8 @@ podman inspect todo-api --format "{{.Config.User}}"            # user non-root
 podman inspect todo-api --format "{{.State.Health.Status}}"    # healthy
 podman inspect todo-api --format "{{.Mounts}}"                 # volume /data
 podman inspect todo-web --format "{{.NetworkSettings.Ports}}"  # port mapping
-podman image inspect ghcr.io/isthatyou-aye/todo-api:1.0.0 --format "{{.Config.Env}}"   # tidak ada ADMIN_TOKEN
-podman image inspect ghcr.io/isthatyou-aye/todo-api:1.0.0 --format "{{json .Config.Labels}}"
+podman image inspect ghcr.io/isthatyou-aye/todo-api:1.0.1 --format "{{.Config.Env}}"   # tidak ada ADMIN_TOKEN
+podman image inspect ghcr.io/isthatyou-aye/todo-api:1.0.1 --format "{{json .Config.Labels}}"
 ```
 
 ### Exec
@@ -303,7 +303,7 @@ podman rm -f todo-web todo-api
 curl.exe -s http://localhost:8080/api/info        # catat nilai "hostname" (= ID container)
 podman rm -f todo-api                             # container dihapus
 podman run -d --name todo-api --network todo-net -v todo-data:/data `
-  --secret todo-admin-token,type=env,target=ADMIN_TOKEN ghcr.io/isthatyou-aye/todo-api:1.0.0
+  --secret todo-admin-token,type=env,target=ADMIN_TOKEN ghcr.io/isthatyou-aye/todo-api:1.0.1
 curl.exe -s http://localhost:8080/api/info        # hostname BERBEDA (container baru)
 ```
 
@@ -333,7 +333,7 @@ curl.exe -X DELETE -H "X-Admin-Token: ganti-dengan-token-rahasia" http://localho
 | Non-root | api: `USER node` (uid 1000), web: user `nginx` (uid 101), port > 1024 |
 | Kode read-only bagi aplikasi | File kode milik root, proses `node` hanya bisa membaca |
 | Tanpa secret di image | `ADMIN_TOKEN` hanya lewat `podman secret` / `.env` saat run |
-| Versi dikunci | Tag base image spesifik (bukan `latest`), image diberi tag `1.0.0` |
+| Versi dikunci | Tag base image spesifik (bukan `latest`), image diberi tag versi semantik (`1.0.0`, `1.0.1`) |
 | Healthcheck | `HEALTHCHECK` di kedua image |
 | Label OCI | Judul, versi, author, source |
 | Proses langsung | `CMD ["node", "src/server.js"]`, bukan `npm start`, supaya SIGTERM sampai ke aplikasi |
@@ -353,7 +353,7 @@ Hardening tambahan (opsional), filesystem container api dibuat read-only, hanya 
 
 ```powershell
 podman run -d --name todo-api --network todo-net --read-only -v todo-data:/data `
-  --secret todo-admin-token,type=env,target=ADMIN_TOKEN ghcr.io/isthatyou-aye/todo-api:1.0.0
+  --secret todo-admin-token,type=env,target=ADMIN_TOKEN ghcr.io/isthatyou-aye/todo-api:1.0.1
 ```
 
 ---
@@ -363,12 +363,12 @@ podman run -d --name todo-api --network todo-net --read-only -v todo-data:/data 
 ```powershell
 podman login ghcr.io -u isthatyou-aye        # password = token GHCR (bukan password GitHub)
 
-podman push ghcr.io/isthatyou-aye/todo-api:1.0.0
-podman push ghcr.io/isthatyou-aye/todo-web:1.0.0
+podman push ghcr.io/isthatyou-aye/todo-api:1.0.1
+podman push ghcr.io/isthatyou-aye/todo-web:1.0.1
 
 # Tag tambahan "latest" yang menunjuk ke versi yang sama
-podman tag ghcr.io/isthatyou-aye/todo-api:1.0.0 ghcr.io/isthatyou-aye/todo-api:latest
-podman tag ghcr.io/isthatyou-aye/todo-web:1.0.0 ghcr.io/isthatyou-aye/todo-web:latest
+podman tag ghcr.io/isthatyou-aye/todo-api:1.0.1 ghcr.io/isthatyou-aye/todo-api:latest
+podman tag ghcr.io/isthatyou-aye/todo-web:1.0.1 ghcr.io/isthatyou-aye/todo-web:latest
 podman push ghcr.io/isthatyou-aye/todo-api:latest
 podman push ghcr.io/isthatyou-aye/todo-web:latest
 ```
@@ -382,21 +382,21 @@ Setelah push pertama, buka **github.com/isthatyou-aye?tab=packages**, lalu untuk
 ```powershell
 # Hapus container dan image lokal
 podman rm -f todo-web todo-api
-podman rmi ghcr.io/isthatyou-aye/todo-api:1.0.0 ghcr.io/isthatyou-aye/todo-api:latest
-podman rmi ghcr.io/isthatyou-aye/todo-web:1.0.0 ghcr.io/isthatyou-aye/todo-web:latest
+podman rmi ghcr.io/isthatyou-aye/todo-api:1.0.1 ghcr.io/isthatyou-aye/todo-api:latest
+podman rmi ghcr.io/isthatyou-aye/todo-web:1.0.1 ghcr.io/isthatyou-aye/todo-web:latest
 podman images                                  # image todo sudah tidak ada
 
 # Logout untuk membuktikan image bisa di-pull tanpa login (public)
 podman logout ghcr.io
 
 # Pull dari registry
-podman pull ghcr.io/isthatyou-aye/todo-api:1.0.0
-podman pull ghcr.io/isthatyou-aye/todo-web:1.0.0
+podman pull ghcr.io/isthatyou-aye/todo-api:1.0.1
+podman pull ghcr.io/isthatyou-aye/todo-web:1.0.1
 
 # Jalankan lagi (network, volume, dan secret masih ada)
 podman run -d --name todo-api --network todo-net -v todo-data:/data `
-  --secret todo-admin-token,type=env,target=ADMIN_TOKEN ghcr.io/isthatyou-aye/todo-api:1.0.0
-podman run -d --name todo-web --network todo-net -p 8080:8080 ghcr.io/isthatyou-aye/todo-web:1.0.0
+  --secret todo-admin-token,type=env,target=ADMIN_TOKEN ghcr.io/isthatyou-aye/todo-api:1.0.1
+podman run -d --name todo-web --network todo-net -p 8080:8080 ghcr.io/isthatyou-aye/todo-web:1.0.1
 podman ps
 ```
 
@@ -434,6 +434,17 @@ podman network rm todo-net
 
 ---
 
-## 14. Lisensi
+## 14. Riwayat versi
+
+| Versi | Perubahan |
+|---|---|
+| `1.0.1` | Saat container api dimatikan, halaman menampilkan "Daftar tugas belum bisa dimuat" (bukan "Halaman masih kosong" yang menyesatkan), pesan error muncul dalam hitungan detik (`resolver_timeout 3s`), dan tombol Coba lagi ikut memuat ulang nama aplikasi. Komentar template Nginx tidak lagi ikut terganti nilai variabel. |
+| `1.0.0` | Rilis pertama: dua halaman (Tugas dan Ringkasan), dua microservice, push ke GHCR. |
+
+Versi lama tetap tersedia di registry, jadi bisa dijalankan kembali kapan saja, misalnya `podman pull ghcr.io/isthatyou-aye/todo-api:1.0.0`.
+
+---
+
+## 15. Lisensi
 
 Kode aplikasi: MIT. Font Bricolage Grotesque dan Atkinson Hyperlegible Next: SIL Open Font License 1.1 (lihat `web/public/fonts/LICENSE.txt`).

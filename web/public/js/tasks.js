@@ -39,6 +39,7 @@
     justAddedId: null,
     drawerId: null,
     pendingDeletes: new Set(),
+    loadError: null,
   };
   let renderTimer = null;
 
@@ -308,6 +309,8 @@
     if (state.view === 'all' || state.view === 'today') parts.push(formatLongDate(todayISO()) + '.');
     if (state.loading) {
       parts.push('Memuat tugas...');
+    } else if (state.loadError && state.tasks.length === 0) {
+      parts.push('Daftar tugas belum bisa dimuat.');
     } else if (state.view === 'done') {
       parts.push(lists.active.length + ' tugas sudah selesai.');
     } else {
@@ -434,6 +437,16 @@
 
   function emptyState(lists) {
     if (lists.active.length > 0) return null;
+    // API tidak bisa dihubungi: jangan tampilkan "kosong", karena datanya
+    // sebenarnya tetap aman di volume, hanya belum bisa dimuat.
+    if (state.loadError && state.tasks.length === 0) {
+      return el('div', { class: 'empty' }, [
+        el('div', { class: 'empty-mark' }, icon('alert')),
+        el('h2', { class: 'empty-title', text: 'Daftar tugas belum bisa dimuat' }),
+        el('p', { text: 'Datamu tetap aman tersimpan. Service api sedang tidak bisa dihubungi, jadi pastikan container todo-api berjalan, lalu coba lagi.' }),
+        el('button', { type: 'button', class: 'btn btn-quiet', text: 'Coba lagi', onclick: () => loadTasks() }),
+      ]);
+    }
     const total = liveTasks().length;
     const box = (title, text, button, iconName) => el('div', { class: 'empty' }, [
       el('div', { class: 'empty-mark' }, icon(iconName || 'inbox')),
@@ -499,11 +512,15 @@
     try {
       state.tasks = await api('/tasks');
       state.loading = false;
+      // Baru pulih dari error: muat ulang juga nama aplikasi (dari APP_NAME)
+      if (state.loadError) window.App.loadAppInfo();
+      state.loadError = null;
       hideBanner();
       render();
       return true;
     } catch (err) {
       state.loading = false;
+      state.loadError = err.message;
       if (!quiet) showBanner(err.message);
       render();
       return false;
