@@ -4,7 +4,7 @@ Proyek UTS mata kuliah Pengembangan dan Operasi. Aplikasi web To-Do List yang di
 
 | | |
 |---|---|
-| **Kelompok** | Kelvin, Anggara, Devin |
+| **Kelompok** | KDA: Kelvin Kurniawan (241112232), Devin Owen Sanusi (241111093), Anggara Adelee (241112271) |
 | **Image** | `ghcr.io/isthatyou-aye/todo-web:1.0.1` dan `ghcr.io/isthatyou-aye/todo-api:1.0.1` |
 | **Teknologi** | Node.js 24 + Express 5 (api), Nginx 1.30 unprivileged (web), HTML/CSS/JavaScript tanpa framework (frontend), Podman |
 
