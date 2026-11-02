@@ -248,11 +248,11 @@ podman rm -f todo-web-2
 podman rm -f todo-api
 podman run -d --name todo-api --network todo-net -v todo-data:/data `
   --secret todo-admin-token,type=env,target=ADMIN_TOKEN `
-  -e APP_NAME="Catatan Kelompok 3" -e APP_ENV=staging -e LOG_FORMAT=json `
+  -e APP_NAME="Catatan Kelompok KDA" -e APP_ENV=staging -e LOG_FORMAT=json `
   ghcr.io/isthatyou-aye/todo-api:1.0.1
 ```
 
-Muat ulang browser: **nama di header berubah** menjadi "Catatan Kelompok 3", footer menampilkan `staging`, dan `podman logs todo-api` kini berformat JSON. Tugas yang sudah ada tetap muncul karena tersimpan di volume.
+Muat ulang browser: **nama di header berubah** menjadi "Catatan Kelompok KDA", footer menampilkan `staging`, dan `podman logs todo-api` kini berformat JSON. Tugas yang sudah ada tetap muncul karena tersimpan di volume.
 
 ### Logs
 
@@ -365,13 +365,9 @@ podman login ghcr.io -u isthatyou-aye        # password = token GHCR (bukan pass
 
 podman push ghcr.io/isthatyou-aye/todo-api:1.0.1
 podman push ghcr.io/isthatyou-aye/todo-web:1.0.1
-
-# Tag tambahan "latest" yang menunjuk ke versi yang sama
-podman tag ghcr.io/isthatyou-aye/todo-api:1.0.1 ghcr.io/isthatyou-aye/todo-api:latest
-podman tag ghcr.io/isthatyou-aye/todo-web:1.0.1 ghcr.io/isthatyou-aye/todo-web:latest
-podman push ghcr.io/isthatyou-aye/todo-api:latest
-podman push ghcr.io/isthatyou-aye/todo-web:latest
 ```
+
+Kami sengaja hanya memakai tag versi (`1.0.0`, `1.0.1`), tanpa tag `latest`, supaya selalu jelas versi mana yang sedang dijalankan.
 
 Setelah push pertama, buka **github.com/isthatyou-aye?tab=packages**, lalu untuk **masing-masing** package: *Package settings → Danger Zone → Change visibility → Public*. Tanpa langkah ini, image tidak bisa di-pull oleh orang lain.
 
@@ -382,8 +378,7 @@ Setelah push pertama, buka **github.com/isthatyou-aye?tab=packages**, lalu untuk
 ```powershell
 # Hapus container dan image lokal
 podman rm -f todo-web todo-api
-podman rmi ghcr.io/isthatyou-aye/todo-api:1.0.1 ghcr.io/isthatyou-aye/todo-api:latest
-podman rmi ghcr.io/isthatyou-aye/todo-web:1.0.1 ghcr.io/isthatyou-aye/todo-web:latest
+podman rmi ghcr.io/isthatyou-aye/todo-api:1.0.1 ghcr.io/isthatyou-aye/todo-web:1.0.1
 podman images                                  # image todo sudah tidak ada
 
 # Logout untuk membuktikan image bisa di-pull tanpa login (public)
