@@ -6,7 +6,7 @@
 #   podman compose logs -f          # lihat log kedua container
 #   podman compose down             # hentikan & hapus container (volume tetap ada)
 #
-# Isinya sama persis dengan perintah manual di README bagian 6.
+# Isinya sama dengan perintah manual di README bagian 7.
 # Secret ADMIN_TOKEN dibaca dari file .env (salin dari .env.example),
 # yang tidak ikut ke Git maupun ke image.
 # =============================================================

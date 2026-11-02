@@ -415,6 +415,10 @@ podman network rm todo-net
 | Masalah | Penyebab dan solusi |
 |---|---|
 | Podman Desktop: *must run with administrative rights to run Hyper-V* | Tidak perlu Hyper-V. Buat Podman machine dengan provider **WSL**. |
+| `npm.ps1 cannot be loaded because running scripts is disabled` | Execution policy PowerShell memblokir skrip: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, atau pakai `npm.cmd` |
+| `Error: context must be a directory` saat build | Perintah dijalankan di luar folder proyek. `cd` dulu ke folder `todo` |
+| `The term '...' is not recognized` saat membuat secret | Nilai secret harus diberi tanda kutip: `"nilai" \| podman secret create todo-admin-token -` |
+| Prompt `[y/N]` dari `podman image prune` tidak bisa diketik | Pakai `podman image prune -f` |
 | `Cannot connect to Podman` | Machine mati setelah restart laptop: `podman machine start` |
 | Warning `HEALTHCHECK is not supported for OCI image format` | Tambahkan `--format docker` pada `podman build` |
 | Halaman tampil tetapi muncul "Service api sedang tidak bisa dihubungi" | `todo-api` belum jalan atau beda network. Cek `podman ps` dan pastikan keduanya memakai `--network todo-net` |
