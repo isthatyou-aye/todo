@@ -262,7 +262,7 @@ podman logs -f todo-web           # ikuti log Nginx secara langsung (Ctrl+C untu
 podman logs --tail 5 todo-api
 ```
 
-Setiap request punya `request_id` yang sama di log Nginx dan log API, sehingga satu request bisa dilacak di kedua container.
+API mencatat setiap request beserta `request_id`. Nginx meneruskan ID tersebut ke API lewat header `X-Request-ID`, dan API mengembalikannya di header respons, sehingga satu request bisa dilacak dari browser sampai API.
 
 ### Inspect
 
